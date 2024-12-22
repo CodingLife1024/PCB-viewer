@@ -1,0 +1,158 @@
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import { VRMLLoader } from 'three/examples/jsm/loaders/VRMLLoader.js';
+
+/**
+ * Initializes and renders a Three.js scene with multiple models, axes, and a plane.
+ * @param container The HTML element where the scene will be rendered.
+ * @param models An array of objects containing model paths, file types, and positions.
+ */
+export function createSceneComplex(
+  container: HTMLElement,
+  models: { path: string; position: { x: number; y: number } }[]
+): void {
+  // Scene setup
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+  camera.position.set(10, 10, 20);
+  camera.lookAt(0, 0, 0);
+
+  const canvas = document.createElement('canvas');
+  container.appendChild(canvas);
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  container.appendChild(renderer.domElement);
+
+  // Lighting
+  const ambientLight = new THREE.AmbientLight(0x404040, 20);
+  scene.add(ambientLight);
+
+  const pointLights: { position: [number, number, number]; intensity: number }[] = [
+    { position: [50, 50, 50], intensity: 10 },
+    { position: [-50, 50, 50], intensity: 10 },
+    { position: [50, -50, 50], intensity: 10 },
+    { position: [50, 50, -50], intensity: 10 },
+    { position: [50, -50, -50], intensity: 10 },
+    { position: [-50, 50, -50], intensity: 10 },
+    { position: [-50, -50, 50], intensity: 10 },
+    { position: [-50, -50, -50], intensity: 10 },
+  ];
+
+  pointLights.forEach((lightConfig) => {
+    const pointLight = new THREE.PointLight(0xffffff, lightConfig.intensity);
+    pointLight.position.set(...lightConfig.position);
+    scene.add(pointLight);
+  });
+
+  // Add green plane along the x-y plane
+  const planeGeometry = new THREE.PlaneGeometry(40, 40);
+  const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x008C4A, side: THREE.DoubleSide });
+  const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+  plane.rotation.x = Math.PI / 2;
+  scene.add(plane);
+
+  // Load models
+  models.forEach(({ path, position }) => {
+    const fileExtension = path.split('.').pop() || '';
+
+    if (fileExtension === 'gltf' || fileExtension === 'glb') {
+      const gltfLoader = new GLTFLoader();
+      gltfLoader.load(
+        path,
+        (gltf) => {
+          const model = gltf.scene;
+          const bbox = new THREE.Box3().setFromObject(model);
+          const minZ = bbox.min.z;
+          const zLength = bbox.max.z - bbox.min.z;
+          model.position.set(position.x, -zLength / 2 - minZ, position.y);
+          model.scale.set(1, 1, 1);
+          scene.add(model);
+        },
+        undefined,
+        (error) => console.error('Error loading GLTF/GLB model:', error)
+      );
+    } else if (fileExtension === 'stl') {
+      const stlLoader = new STLLoader();
+      stlLoader.load(
+        path,
+        (geometry) => {
+          const material = new THREE.MeshStandardMaterial({ color: 0xaaaaaa });
+          const mesh = new THREE.Mesh(geometry, material);
+          const stlBBox = new THREE.Box3().setFromObject(mesh);
+          const stlMinZ = stlBBox.min.z;
+          mesh.position.set(position.x, -stlMinZ, position.y);
+          mesh.scale.set(1, 1, 1);
+          scene.add(mesh);
+        },
+        undefined,
+        (error) => console.error('Error loading STL model:', error)
+      );
+    } else if (fileExtension === 'obj') {
+      const objLoader = new OBJLoader();
+      objLoader.load(
+        path,
+        (object) => {
+          const objBBox = new THREE.Box3().setFromObject(object);
+          const objMinZ = objBBox.min.z;
+          object.position.set(position.x, -objMinZ, position.y);
+          object.scale.set(1, 1, 1);
+          scene.add(object);
+        },
+        undefined,
+        (error) => console.error('Error loading OBJ model:', error)
+      );
+    } else if (fileExtension === 'wrl') {
+      const vrmlLoader = new VRMLLoader();
+      vrmlLoader.load(
+        path,
+        (object) => {
+          const wrlBBox = new THREE.Box3().setFromObject(object);
+          const wrlMinZ = wrlBBox.min.z;
+          object.position.set(position.x, -wrlMinZ, position.y);
+          scene.add(object);
+        },
+        undefined,
+        (error) => console.error('Error loading WRL model:', error)
+      );
+    } else {
+      console.error('Unsupported file format:', fileExtension);
+    }
+  });
+
+  // Add axes
+  const axesHelper = new THREE.AxesHelper(50);
+  scene.add(axesHelper);
+
+  // OrbitControls for camera movement
+  const controls = new OrbitControls(camera, renderer.domElement);
+
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.1;
+  controls.autoRotate = false;
+  controls.target.set(0, 0, 0);
+
+  // Update camera and controls
+  function updateCameraAndControls() {
+    controls.update();
+    renderer.render(scene, camera);
+  }
+
+  // Handle window resizing
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  // Animation loop
+  function animate() {
+    requestAnimationFrame(animate);
+    updateCameraAndControls();
+  }
+
+  animate();
+}
