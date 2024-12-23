@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
@@ -17,7 +18,7 @@ export function createSceneComplex(
   // Scene setup
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-  camera.position.set(10, 10, 20);
+  camera.position.set(10, 10, 10);
   camera.lookAt(0, 0, 0);
 
   const canvas = document.createElement('canvas');
@@ -27,33 +28,63 @@ export function createSceneComplex(
   renderer.setSize(window.innerWidth, window.innerHeight);
   container.appendChild(renderer.domElement);
 
-  // Lighting
-  const ambientLight = new THREE.AmbientLight(0x404040, 20);
+  // Fix ambient light intensity
+  const ambientLight = new THREE.AmbientLight(0x404040, 10); // Changed from 100 to 1
   scene.add(ambientLight);
 
+  // Fixed point light configurations
   const pointLights: { position: [number, number, number]; intensity: number }[] = [
-    { position: [50, 50, 50], intensity: 10 },
-    { position: [-50, 50, 50], intensity: 10 },
-    { position: [50, -50, 50], intensity: 10 },
-    { position: [50, 50, -50], intensity: 10 },
-    { position: [50, -50, -50], intensity: 10 },
-    { position: [-50, 50, -50], intensity: 10 },
-    { position: [-50, -50, 50], intensity: 10 },
-    { position: [-50, -50, -50], intensity: 10 },
+    { position: [10, 10, 10], intensity: 50 },
+    { position: [-10, 10, 10], intensity: 50 },
+    { position: [10, -10, 10], intensity: 50 },
+    { position: [10, 10, -10], intensity: 50 },
+    { position: [10, -10, -10], intensity: 50 },
+    { position: [-10, 10, -10], intensity: 50 },
+    { position: [-10, -10, 10], intensity: 50 },
+    { position: [-10, -10, -10], intensity: 50 },
+    { position: [0, 0, 0], intensity: 50 },
   ];
 
   pointLights.forEach((lightConfig) => {
     const pointLight = new THREE.PointLight(0xffffff, lightConfig.intensity);
     pointLight.position.set(...lightConfig.position);
+
+    // Add helper to visualize the light position
+    // const sphereSize = 1;
+    // const pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
     scene.add(pointLight);
+    // scene.add(pointLightHelper);
   });
 
   // Add green plane along the x-y plane
   const planeGeometry = new THREE.PlaneGeometry(40, 40);
-  const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x008C4A, side: THREE.DoubleSide });
+  const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x40573e, side: THREE.DoubleSide }); // Updated color
   const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-  plane.rotation.x = Math.PI / 2;
+  plane.rotation.x = -Math.PI / 2;
   scene.add(plane);
+
+  const planeWidth = 40;
+  const planeHeight = 40;
+  const planeDepth = 0.5; // Elevation to make it 3D (not a flat plane)
+  const borderRadius = 100; // Round the corners
+  const roundedSegments = 4; // Number of segments for rounded edges (more segments = smoother curve)
+
+
+  const roundedPlaneGeometry = new RoundedBoxGeometry(planeWidth, planeDepth, planeHeight, roundedSegments, borderRadius);
+  const roundedPlaneMaterial = new THREE.MeshBasicMaterial({ color: 0x40573e }); // Green color
+  const roundedPlane = new THREE.Mesh(roundedPlaneGeometry, roundedPlaneMaterial);
+
+  // Position and rotate the plane
+  roundedPlane.position.y = -planeDepth / 2 - 0.01; // Adjust to lower slightly
+  scene.add(roundedPlane);
+
+  const roundedPlaneGeometryGrey = new RoundedBoxGeometry(planeWidth, planeDepth, planeHeight, roundedSegments, borderRadius);
+  const roundedPlaneMaterialGrey = new THREE.MeshBasicMaterial({ color: 0xA9A9A9 }); // Grey color
+  const roundedPlaneGrey = new THREE.Mesh(roundedPlaneGeometryGrey, roundedPlaneMaterialGrey);
+
+  // Position and rotate the plane
+  roundedPlaneGrey.position.y = -planeDepth; // Adjust to lower slightly
+  scene.add(roundedPlaneGrey);
 
   // Load models
   models.forEach(({ path, position }) => {
@@ -69,6 +100,7 @@ export function createSceneComplex(
           const minZ = bbox.min.z;
           const zLength = bbox.max.z - bbox.min.z;
           model.position.set(position.x, -zLength / 2 - minZ, position.y);
+          model.rotation.x = -Math.PI / 2;
           model.scale.set(1, 1, 1);
           scene.add(model);
         },
@@ -84,6 +116,7 @@ export function createSceneComplex(
           const mesh = new THREE.Mesh(geometry, material);
           const stlBBox = new THREE.Box3().setFromObject(mesh);
           const stlMinZ = stlBBox.min.z;
+          mesh.rotateX(-Math.PI / 2);
           mesh.position.set(position.x, -stlMinZ, position.y);
           mesh.scale.set(1, 1, 1);
           scene.add(mesh);
@@ -100,6 +133,7 @@ export function createSceneComplex(
           const objMinZ = objBBox.min.z;
           object.position.set(position.x, -objMinZ, position.y);
           object.scale.set(1, 1, 1);
+          object.rotation.x = -Math.PI / 2;
           scene.add(object);
         },
         undefined,
@@ -113,6 +147,8 @@ export function createSceneComplex(
           const wrlBBox = new THREE.Box3().setFromObject(object);
           const wrlMinZ = wrlBBox.min.z;
           object.position.set(position.x, -wrlMinZ, position.y);
+          object.scale.set(1, 1, 1);
+          object.rotation.x = -Math.PI / 2;
           scene.add(object);
         },
         undefined,

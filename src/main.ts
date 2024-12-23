@@ -54,8 +54,8 @@ const container = document.body;
 // scenes[0].callback();
 
 createSceneComplex(container, [
-  { path: '/models/fan.obj', position: { x: 0, y: 6 } },
-  { path: '/models/laird.stl', position: { x: 10, y: 10 } },
+  { path: '/models/led.wrl', position: { x: 0, y: 6 } },
+  { path: '/models/inductor2.wrl', position: { x: 10, y: 10 } },
   { path: '/models/laird.wrl', position: { x: -5, y: -5 } },
-  { path: '/models/bed.glb', position: { x: 9.8, y: -8 } },
+  { path: '/models/oscillator2.wrl', position: { x: 9.8, y: -8 } },
 ])
