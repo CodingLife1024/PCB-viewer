@@ -24,5 +24,18 @@ renderer(
     { position: { x: 16, y: 17 }, radius: 0.3 },
     { position: { x: 15, y: 17 }, radius: 0.3 },
     { position: { x: 14, y: 17 }, radius: 0.3 },
+
+    { position: { x: -18, y: 18 }, radius: 0.6 },
+    { position: { x: -18, y: 16 }, radius: 0.6 },
+    { position: { x: -18, y: 14 }, radius: 0.6 },
+    { position: { x: -18, y: 12 }, radius: 0.6 },
+    { position: { x: -18, y: 10 }, radius: 0.6 },
+    { position: { x: -18, y: 8 }, radius: 0.6 },
+    { position: { x: -15, y: 18 }, radius: 0.6 },
+    { position: { x: -15, y: 16 }, radius: 0.6 },
+    { position: { x: -15, y: 14 }, radius: 0.6 },
+    { position: { x: -15, y: 12 }, radius: 0.6 },
+    { position: { x: -15, y: 10 }, radius: 0.6 },
+    { position: { x: -15, y: 8 }, radius: 0.6 },
   ]
 );

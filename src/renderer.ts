@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { VRMLLoader } from 'three/examples/jsm/loaders/VRMLLoader.js';
+import { createPCBWithHoles } from './createPCBPlane';
 
 /**
  * Initializes and renders a Three.js scene with multiple models, axes, and a plane.
@@ -13,13 +14,13 @@ import { VRMLLoader } from 'three/examples/jsm/loaders/VRMLLoader.js';
  */
 export function renderer(
   container: HTMLElement,
-  models: { path: string; position: { x: number; y: number }, rotation: { x: number; y: number, z: number } }[],
+  models: { path: string; position: { x: number; y: number }, rotation: { x: number; y: number; z: number } }[],
   holes: { position: { x: number; y: number }, radius: number }[]
 ): void {
   // Scene setup
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-  camera.position.set(10, 10, 10);
+  camera.position.set(20, 20, 20);
   camera.lookAt(0, 0, 0);
 
   const canvas = document.createElement('canvas');
@@ -27,24 +28,32 @@ export function renderer(
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 
   renderer.setSize(window.innerWidth, window.innerHeight);
-  container.appendChild(renderer.domElement);
+
+  // Create PCB with holes
+  const pcbWidth = 40;
+  const pcbHeight = 40;
+  const pcbDepth = 0.6; // Use your defined planeDepth or any other value
+
+  const pcbMesh = createPCBWithHoles(pcbWidth, pcbHeight, pcbDepth, holes);
+  scene.add(pcbMesh);
 
   // Fix ambient light intensity
-  const ambientLight = new THREE.AmbientLight(0x404040, 10); // Changed from 100 to 1
+  const ambientLight = new THREE.AmbientLight(0x404040, 50);
   scene.add(ambientLight);
 
   // Fixed point light configurations
   const pointLights: { position: [number, number, number]; intensity: number }[] = [
-    { position: [10, 10, 10], intensity: 50 },
-    { position: [-10, 10, 10], intensity: 50 },
-    { position: [10, -10, 10], intensity: 50 },
-    { position: [10, 10, -10], intensity: 50 },
-    { position: [10, -10, -10], intensity: 50 },
-    { position: [-10, 10, -10], intensity: 50 },
-    { position: [-10, -10, 10], intensity: 50 },
-    { position: [-10, -10, -10], intensity: 50 },
-    { position: [0, 0, 0], intensity: 50 },
-  ];
+    { position: [10, 10, 10], intensity: 100 }, // Increase intensity for testing
+    { position: [-10, 10, 10], intensity: 100 },
+    { position: [10, -10, 10], intensity: 100 },
+    { position: [10, 10, -10], intensity: 100 },
+    { position: [10, -10, -10], intensity: 100 },
+    { position: [-10, 10, -10], intensity: 100 },
+    { position: [-10, -10, 10], intensity: 100 },
+    { position: [-10, -10, -10], intensity: 100 },
+    { position: [0, 0, 0], intensity: 100 },
+];
+
 
   pointLights.forEach((lightConfig) => {
     const pointLight = new THREE.PointLight(0xffffff, lightConfig.intensity);
@@ -55,47 +64,6 @@ export function renderer(
     // const pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
     scene.add(pointLight);
     // scene.add(pointLightHelper);
-  });
-
-  // Add green plane along the x-y plane
-  // const planeGeometry = new THREE.PlaneGeometry(40, 40);
-  // const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x40573e, side: THREE.DoubleSide }); // Updated color
-  // const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-  // plane.rotation.x = -Math.PI / 2;
-  // scene.add(plane);
-
-  const planeWidth = 40;
-  const planeHeight = 40;
-  const planeDepth = 0.6; // Elevation to make it 3D (not a flat plane)
-
-  // Green cuboid for the plane
-  const cuboidGeometry = new THREE.BoxGeometry(planeWidth, planeDepth, planeHeight);
-  const cuboidMaterial = new THREE.MeshBasicMaterial({ color: 0x40573e }); // Green color
-  const cuboid = new THREE.Mesh(cuboidGeometry, cuboidMaterial);
-
-  // Position the green cuboid
-  cuboid.position.y = -planeDepth / 2; // Slight offset to separate it from the grey plane
-  scene.add(cuboid);
-
-  // Grey cuboid underneath the green plane
-  const greyCuboidGeometry = new THREE.BoxGeometry(planeWidth, planeDepth, planeHeight);
-  const greyCuboidMaterial = new THREE.MeshBasicMaterial({ color: 0xa9a9a9 }); // Grey color
-  const greyCuboid = new THREE.Mesh(greyCuboidGeometry, greyCuboidMaterial);
-
-  // Position the grey cuboid
-  greyCuboid.position.y = -planeDepth - 0.3; // Slight offset to separate it from the green plane
-  scene.add(greyCuboid);
-
-  // Inside your renderer function, after adding the green cuboid for the plane
-  holes.forEach(({ position, radius }) => {
-    const holeHeight = 2 * planeDepth + 0.02; // Set height to 2 * planeDepth
-    const holeGeometry = new THREE.CylinderGeometry(radius, radius, holeHeight, 32); // Create a cylinder geometry
-    const holeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 }); // Color for the hole (black)
-    const hole = new THREE.Mesh(holeGeometry, holeMaterial);
-
-    // Position the hole correctly on the PCB
-    hole.position.set(position.x, -holeHeight / 2 + 0.01, position.y); // Center the cylinder vertically
-    scene.add(hole);
   });
 
   // Load models
@@ -114,7 +82,7 @@ export function renderer(
           const bbox = new THREE.Box3().setFromObject(model);
           const minZ = bbox.min.z;
           const zLength = bbox.max.z - bbox.min.z;
-          model.position.set(position.x, -zLength / 2 - minZ, position.y);
+          model.position.set(position.x, -zLength / 2 - minZ + pcbDepth, position.y);
           model.scale.set(1, 1, 1);
           scene.add(model);
         },
@@ -133,7 +101,7 @@ export function renderer(
           mesh.rotateZ(Math.PI * rotation.z);
           const stlBBox = new THREE.Box3().setFromObject(mesh);
           const stlMinZ = stlBBox.min.z;
-          mesh.position.set(position.x, -stlMinZ, position.y);
+          mesh.position.set(position.x, -stlMinZ + pcbDepth, position.y);
           mesh.scale.set(1, 1, 1);
           scene.add(mesh);
         },
@@ -150,7 +118,7 @@ export function renderer(
           object.rotation.y = Math.PI * rotation.y;
           object.rotation.z = Math.PI * rotation.z;
           const objMinZ = objBBox.min.z;
-          object.position.set(position.x, -objMinZ, position.y);
+          object.position.set(position.x, -objMinZ + pcbDepth, position.y);
           object.scale.set(1, 1, 1);
           scene.add(object);
         },
@@ -167,7 +135,7 @@ export function renderer(
           object.rotation.y = Math.PI * rotation.y;
           object.rotation.z = Math.PI * rotation.z;
           const wrlMinZ = wrlBBox.min.z;
-          object.position.set(position.x, -wrlMinZ, position.y);
+          object.position.set(position.x, -wrlMinZ + pcbDepth, position.y);
           object.scale.set(1, 1, 1);
           scene.add(object);
         },
