@@ -14,7 +14,15 @@ renderer(
     { path: '/models/inductor2.wrl', position: { x: 17, y: 0 }, rotation: { x: -0.5, y: 0, z: 0.5 } },
   ],
   [
-    { position: { x: 5, y: 5 }, radius: 1 },
-    { position: { x: -10, y: -8 }, radius: 1 },
+    { position: { x: 18, y: 18 }, radius: 0.3 },
+    { position: { x: 17, y: 18 }, radius: 0.3 },
+    { position: { x: 16, y: 18 }, radius: 0.3 },
+    { position: { x: 15, y: 18 }, radius: 0.3 },
+    { position: { x: 14, y: 18 }, radius: 0.3 },
+    { position: { x: 18, y: 17 }, radius: 0.3 },
+    { position: { x: 17, y: 17 }, radius: 0.3 },
+    { position: { x: 16, y: 17 }, radius: 0.3 },
+    { position: { x: 15, y: 17 }, radius: 0.3 },
+    { position: { x: 14, y: 17 }, radius: 0.3 },
   ]
 );
