@@ -38,20 +38,25 @@ export function renderer(
   scene.add(pcbMesh);
 
   // Fix ambient light intensity
-  const ambientLight = new THREE.AmbientLight(0x404040, 50);
-  scene.add(ambientLight);
+  // const ambientLight = new THREE.AmbientLight(0x404040, 50);
+  // scene.add(ambientLight);
 
   // Fixed point light configurations
   const pointLights: { position: [number, number, number]; intensity: number }[] = [
-    { position: [10, 10, 10], intensity: 100 }, // Increase intensity for testing
-    { position: [-10, 10, 10], intensity: 100 },
-    { position: [10, -10, 10], intensity: 100 },
-    { position: [10, 10, -10], intensity: 100 },
-    { position: [10, -10, -10], intensity: 100 },
-    { position: [-10, 10, -10], intensity: 100 },
-    { position: [-10, -10, 10], intensity: 100 },
-    { position: [-10, -10, -10], intensity: 100 },
-    { position: [0, 0, 0], intensity: 100 },
+    { position: [10, 10, 10], intensity: 200 }, // Increase intensity for testing
+    { position: [-10, 10, 10], intensity: 200 },
+    { position: [10, -10, 10], intensity: 200 },
+    { position: [10, 10, -10], intensity: 200 },
+    { position: [10, -10, -10], intensity: 200 },
+    { position: [-10, 10, -10], intensity: 200 },
+    { position: [-10, -10, 10], intensity: 200 },
+    { position: [-10, -10, -10], intensity: 200 },
+    { position: [0, 0, 0], intensity: 200 },
+    { position: [0, 20, 0], intensity: 200 },
+    { position: [25, 0, 0], intensity: 200 },
+    { position: [0, 0, 25], intensity: 200 },
+    { position: [-25, 0, 0], intensity: 200 },
+    { position: [0, 0, -25], intensity: 200 },
 ];
 
 
@@ -62,8 +67,8 @@ export function renderer(
     // Add helper to visualize the light position
     // const sphereSize = 1;
     // const pointLightHelper = new THREE.PointLightHelper(pointLight, sphereSize);
-    scene.add(pointLight);
     // scene.add(pointLightHelper);
+    scene.add(pointLight);
   });
 
   // Load models
