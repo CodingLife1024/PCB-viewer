@@ -11,11 +11,13 @@ import { createPCBWithHoles } from './createPCBPlane';
  * @param container The HTML element where the scene will be rendered.
  * @param models An array of objects containing model paths, file types, and positions.
  * @param holes An array of objects containing hole positions and radii.
+ * @param text An array of objects containing text strings and positions.
  */
 export function renderer(
   container: HTMLElement,
   models: { path: string; position: { x: number; y: number }, rotation: { x: number; y: number; z: number } }[],
-  holes: { position: { x: number; y: number }, radius: number }[]
+  holes: { position: { x: number; y: number }, radius: number }[],
+  text: { text: string; position: { x: number; y: number, }; size: number }[]
 ): void {
   // Scene setup
   const scene = new THREE.Scene();
