@@ -9,10 +9,12 @@ import { VRMLLoader } from 'three/examples/jsm/loaders/VRMLLoader.js';
  * Initializes and renders a Three.js scene with multiple models, axes, and a plane.
  * @param container The HTML element where the scene will be rendered.
  * @param models An array of objects containing model paths, file types, and positions.
+ * @param holes An array of objects containing hole positions and radii.
  */
 export function renderer(
   container: HTMLElement,
-  models: { path: string; position: { x: number; y: number }, rotation: { x: number; y: number, z: number } }[]
+  models: { path: string; position: { x: number; y: number }, rotation: { x: number; y: number, z: number } }[],
+  holes: { position: { x: number; y: number }, radius: number }[]
 ): void {
   // Scene setup
   const scene = new THREE.Scene();
