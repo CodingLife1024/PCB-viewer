@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
@@ -11,7 +10,7 @@ import { VRMLLoader } from 'three/examples/jsm/loaders/VRMLLoader.js';
  * @param container The HTML element where the scene will be rendered.
  * @param models An array of objects containing model paths, file types, and positions.
  */
-export function createSceneComplex(
+export function renderer(
   container: HTMLElement,
   models: { path: string; position: { x: number; y: number } }[]
 ): void {
@@ -57,34 +56,33 @@ export function createSceneComplex(
   });
 
   // Add green plane along the x-y plane
-  const planeGeometry = new THREE.PlaneGeometry(40, 40);
-  const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x40573e, side: THREE.DoubleSide }); // Updated color
-  const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-  plane.rotation.x = -Math.PI / 2;
-  scene.add(plane);
+const planeGeometry = new THREE.PlaneGeometry(40, 40);
+const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x40573e, side: THREE.DoubleSide }); // Updated color
+const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+plane.rotation.x = -Math.PI / 2;
+scene.add(plane);
 
-  const planeWidth = 40;
-  const planeHeight = 40;
-  const planeDepth = 0.5; // Elevation to make it 3D (not a flat plane)
-  const borderRadius = 100; // Round the corners
-  const roundedSegments = 4; // Number of segments for rounded edges (more segments = smoother curve)
+const planeWidth = 40;
+const planeHeight = 40;
+const planeDepth = 0.6; // Elevation to make it 3D (not a flat plane)
 
+// Green cuboid for the plane
+const cuboidGeometry = new THREE.BoxGeometry(planeWidth, planeDepth, planeHeight);
+const cuboidMaterial = new THREE.MeshBasicMaterial({ color: 0x40573e }); // Green color
+const cuboid = new THREE.Mesh(cuboidGeometry, cuboidMaterial);
 
-  const roundedPlaneGeometry = new RoundedBoxGeometry(planeWidth, planeDepth, planeHeight, roundedSegments, borderRadius);
-  const roundedPlaneMaterial = new THREE.MeshBasicMaterial({ color: 0x40573e }); // Green color
-  const roundedPlane = new THREE.Mesh(roundedPlaneGeometry, roundedPlaneMaterial);
+// Position the green cuboid
+cuboid.position.y = -planeDepth / 2; // Slight offset to separate it from the grey plane
+scene.add(cuboid);
 
-  // Position and rotate the plane
-  roundedPlane.position.y = -planeDepth / 2 - 0.01; // Adjust to lower slightly
-  scene.add(roundedPlane);
+// Grey cuboid underneath the green plane
+const greyCuboidGeometry = new THREE.BoxGeometry(planeWidth, planeDepth, planeHeight);
+const greyCuboidMaterial = new THREE.MeshBasicMaterial({ color: 0xa9a9a9 }); // Grey color
+const greyCuboid = new THREE.Mesh(greyCuboidGeometry, greyCuboidMaterial);
 
-  const roundedPlaneGeometryGrey = new RoundedBoxGeometry(planeWidth, planeDepth, planeHeight, roundedSegments, borderRadius);
-  const roundedPlaneMaterialGrey = new THREE.MeshBasicMaterial({ color: 0xA9A9A9 }); // Grey color
-  const roundedPlaneGrey = new THREE.Mesh(roundedPlaneGeometryGrey, roundedPlaneMaterialGrey);
-
-  // Position and rotate the plane
-  roundedPlaneGrey.position.y = -planeDepth; // Adjust to lower slightly
-  scene.add(roundedPlaneGrey);
+// Position the grey cuboid
+greyCuboid.position.y = -planeDepth - 0.3; // Slight offset to separate it from the green plane
+scene.add(greyCuboid);
 
   // Load models
   models.forEach(({ path, position }) => {
