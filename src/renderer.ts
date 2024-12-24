@@ -37,9 +37,9 @@ export function renderer(
   const pcbMesh = createPCBWithHoles(pcbWidth, pcbHeight, pcbDepth, holes);
   scene.add(pcbMesh);
 
-  // Fix ambient light intensity
-  // const ambientLight = new THREE.AmbientLight(0x404040, 50);
-  // scene.add(ambientLight);
+  // Ambient light and its intensity
+  const ambientLight = new THREE.AmbientLight(0x404040, 20);
+  scene.add(ambientLight);
 
   // Fixed point light configurations
   const pointLights: { position: [number, number, number]; intensity: number }[] = [
