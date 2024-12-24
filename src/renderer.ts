@@ -58,11 +58,11 @@ export function renderer(
   });
 
   // Add green plane along the x-y plane
-  const planeGeometry = new THREE.PlaneGeometry(40, 40);
-  const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x40573e, side: THREE.DoubleSide }); // Updated color
-  const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-  plane.rotation.x = -Math.PI / 2;
-  scene.add(plane);
+  // const planeGeometry = new THREE.PlaneGeometry(40, 40);
+  // const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x40573e, side: THREE.DoubleSide }); // Updated color
+  // const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+  // plane.rotation.x = -Math.PI / 2;
+  // scene.add(plane);
 
   const planeWidth = 40;
   const planeHeight = 40;
@@ -85,6 +85,18 @@ export function renderer(
   // Position the grey cuboid
   greyCuboid.position.y = -planeDepth - 0.3; // Slight offset to separate it from the green plane
   scene.add(greyCuboid);
+
+  // Inside your renderer function, after adding the green cuboid for the plane
+  holes.forEach(({ position, radius }) => {
+    const holeHeight = 2 * planeDepth + 0.02; // Set height to 2 * planeDepth
+    const holeGeometry = new THREE.CylinderGeometry(radius, radius, holeHeight, 32); // Create a cylinder geometry
+    const holeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 }); // Color for the hole (black)
+    const hole = new THREE.Mesh(holeGeometry, holeMaterial);
+
+    // Position the hole correctly on the PCB
+    hole.position.set(position.x, -holeHeight / 2 + 0.01, position.y); // Center the cylinder vertically
+    scene.add(hole);
+  });
 
   // Load models
   models.forEach(({ path, position, rotation }) => {
