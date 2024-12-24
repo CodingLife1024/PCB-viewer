@@ -12,7 +12,7 @@ import { VRMLLoader } from 'three/examples/jsm/loaders/VRMLLoader.js';
  */
 export function renderer(
   container: HTMLElement,
-  models: { path: string; position: { x: number; y: number } }[]
+  models: { path: string; position: { x: number; y: number }, rotation: { x: number; y: number, z: number } }[]
 ): void {
   // Scene setup
   const scene = new THREE.Scene();
@@ -56,36 +56,36 @@ export function renderer(
   });
 
   // Add green plane along the x-y plane
-const planeGeometry = new THREE.PlaneGeometry(40, 40);
-const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x40573e, side: THREE.DoubleSide }); // Updated color
-const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-plane.rotation.x = -Math.PI / 2;
-scene.add(plane);
+  const planeGeometry = new THREE.PlaneGeometry(40, 40);
+  const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x40573e, side: THREE.DoubleSide }); // Updated color
+  const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+  plane.rotation.x = -Math.PI / 2;
+  scene.add(plane);
 
-const planeWidth = 40;
-const planeHeight = 40;
-const planeDepth = 0.6; // Elevation to make it 3D (not a flat plane)
+  const planeWidth = 40;
+  const planeHeight = 40;
+  const planeDepth = 0.6; // Elevation to make it 3D (not a flat plane)
 
-// Green cuboid for the plane
-const cuboidGeometry = new THREE.BoxGeometry(planeWidth, planeDepth, planeHeight);
-const cuboidMaterial = new THREE.MeshBasicMaterial({ color: 0x40573e }); // Green color
-const cuboid = new THREE.Mesh(cuboidGeometry, cuboidMaterial);
+  // Green cuboid for the plane
+  const cuboidGeometry = new THREE.BoxGeometry(planeWidth, planeDepth, planeHeight);
+  const cuboidMaterial = new THREE.MeshBasicMaterial({ color: 0x40573e }); // Green color
+  const cuboid = new THREE.Mesh(cuboidGeometry, cuboidMaterial);
 
-// Position the green cuboid
-cuboid.position.y = -planeDepth / 2; // Slight offset to separate it from the grey plane
-scene.add(cuboid);
+  // Position the green cuboid
+  cuboid.position.y = -planeDepth / 2; // Slight offset to separate it from the grey plane
+  scene.add(cuboid);
 
-// Grey cuboid underneath the green plane
-const greyCuboidGeometry = new THREE.BoxGeometry(planeWidth, planeDepth, planeHeight);
-const greyCuboidMaterial = new THREE.MeshBasicMaterial({ color: 0xa9a9a9 }); // Grey color
-const greyCuboid = new THREE.Mesh(greyCuboidGeometry, greyCuboidMaterial);
+  // Grey cuboid underneath the green plane
+  const greyCuboidGeometry = new THREE.BoxGeometry(planeWidth, planeDepth, planeHeight);
+  const greyCuboidMaterial = new THREE.MeshBasicMaterial({ color: 0xa9a9a9 }); // Grey color
+  const greyCuboid = new THREE.Mesh(greyCuboidGeometry, greyCuboidMaterial);
 
-// Position the grey cuboid
-greyCuboid.position.y = -planeDepth - 0.3; // Slight offset to separate it from the green plane
-scene.add(greyCuboid);
+  // Position the grey cuboid
+  greyCuboid.position.y = -planeDepth - 0.3; // Slight offset to separate it from the green plane
+  scene.add(greyCuboid);
 
   // Load models
-  models.forEach(({ path, position }) => {
+  models.forEach(({ path, position, rotation }) => {
     const fileExtension = path.split('.').pop() || '';
 
     if (fileExtension === 'gltf' || fileExtension === 'glb') {
@@ -94,11 +94,13 @@ scene.add(greyCuboid);
         path,
         (gltf) => {
           const model = gltf.scene;
+          model.rotation.x = Math.PI * rotation.x;
+          model.rotation.y = Math.PI * rotation.y;
+          model.rotation.z = Math.PI * rotation.z;
           const bbox = new THREE.Box3().setFromObject(model);
           const minZ = bbox.min.z;
           const zLength = bbox.max.z - bbox.min.z;
           model.position.set(position.x, -zLength / 2 - minZ, position.y);
-          model.rotation.x = -Math.PI / 2;
           model.scale.set(1, 1, 1);
           scene.add(model);
         },
@@ -112,9 +114,11 @@ scene.add(greyCuboid);
         (geometry) => {
           const material = new THREE.MeshStandardMaterial({ color: 0xaaaaaa });
           const mesh = new THREE.Mesh(geometry, material);
+          mesh.rotateX(Math.PI * rotation.x);
+          mesh.rotateY(Math.PI * rotation.y);
+          mesh.rotateZ(Math.PI * rotation.z);
           const stlBBox = new THREE.Box3().setFromObject(mesh);
           const stlMinZ = stlBBox.min.z;
-          mesh.rotateX(-Math.PI / 2);
           mesh.position.set(position.x, -stlMinZ, position.y);
           mesh.scale.set(1, 1, 1);
           scene.add(mesh);
@@ -128,10 +132,12 @@ scene.add(greyCuboid);
         path,
         (object) => {
           const objBBox = new THREE.Box3().setFromObject(object);
+          object.rotation.x = Math.PI * rotation.x;
+          object.rotation.y = Math.PI * rotation.y;
+          object.rotation.z = Math.PI * rotation.z;
           const objMinZ = objBBox.min.z;
           object.position.set(position.x, -objMinZ, position.y);
           object.scale.set(1, 1, 1);
-          object.rotation.x = -Math.PI / 2;
           scene.add(object);
         },
         undefined,
@@ -143,10 +149,12 @@ scene.add(greyCuboid);
         path,
         (object) => {
           const wrlBBox = new THREE.Box3().setFromObject(object);
+          object.rotation.x = Math.PI * rotation.x;
+          object.rotation.y = Math.PI * rotation.y;
+          object.rotation.z = Math.PI * rotation.z;
           const wrlMinZ = wrlBBox.min.z;
           object.position.set(position.x, -wrlMinZ, position.y);
           object.scale.set(1, 1, 1);
-          object.rotation.x = -Math.PI / 2;
           scene.add(object);
         },
         undefined,
