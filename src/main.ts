@@ -12,6 +12,7 @@ renderer(
     { path: '/models/inductor2.wrl', position: { x: 17, y: 4 }, rotation: { x: -0.5, y: 0, z: 0.5 } },
     { path: '/models/inductor2.wrl', position: { x: 17, y: -4 }, rotation: { x: -0.5, y: 0, z: 0.5 } },
     { path: '/models/inductor2.wrl', position: { x: 17, y: 0 }, rotation: { x: -0.5, y: 0, z: 0.5 } },
+    { path: '/models/microcontroller.wrl', position: { x: 8, y: -14 }, rotation: { x: -0.5, y: 0, z: 0.5 } },
   ],
   [
     { position: { x: 18, y: 18 }, radius: 0.3 },
