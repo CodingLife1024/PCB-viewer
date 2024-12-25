@@ -238,57 +238,71 @@ export function renderer(
   wiringPaths.forEach((wiringPath) => {
     const { points, thickness } = wiringPath;
 
+    // Create material and mesh
+    const material = new THREE.MeshStandardMaterial({
+      color: 0xffd700, // Gold color
+      side: THREE.DoubleSide // Make the rectangle visible from both sides
+    });
+
+    const totalPoints = points.length;
+
     // Process each segment between consecutive points
     for (let i = 0; i < points.length - 1; i++) {
-        const start = new THREE.Vector2(points[i].x, points[i].z);
-        const end = new THREE.Vector2(points[i + 1].x, points[i + 1].z);
+      const start = new THREE.Vector2(points[i].x, points[i].z);
+      const end = new THREE.Vector2(points[i + 1].x, points[i + 1].z);
 
-        // Calculate direction and perpendicular vector for rectangle width
-        const direction = new THREE.Vector2().subVectors(end, start);
-        const length = direction.length();
-        direction.normalize();
+      // Calculate direction and perpendicular vector for rectangle width
+      const direction = new THREE.Vector2().subVectors(end, start);
+      const length = direction.length();
+      direction.normalize();
 
-        // Calculate perpendicular vector for thickness
-        const perpendicular = new THREE.Vector2(-direction.y, direction.x).multiplyScalar(thickness / 2);
+      // Calculate perpendicular vector for thickness
+      const perpendicular = new THREE.Vector2(-direction.y, direction.x).multiplyScalar(thickness / 2);
 
-        // Calculate the four corners of the rectangle
-        const corners = [
-            new THREE.Vector3(start.x + perpendicular.x, pcbDepth + 0.01, start.y + perpendicular.y),
-            new THREE.Vector3(start.x - perpendicular.x, pcbDepth + 0.01, start.y - perpendicular.y),
-            new THREE.Vector3(end.x - perpendicular.x, pcbDepth + 0.01, end.y - perpendicular.y),
-            new THREE.Vector3(end.x + perpendicular.x, pcbDepth + 0.01, end.y + perpendicular.y)
-        ];
+      // Calculate the four corners of the rectangle
+      const corners = [
+        new THREE.Vector3(start.x + perpendicular.x, pcbDepth + 0.01, start.y + perpendicular.y),
+        new THREE.Vector3(start.x - perpendicular.x, pcbDepth + 0.01, start.y - perpendicular.y),
+        new THREE.Vector3(end.x - perpendicular.x, pcbDepth + 0.01, end.y - perpendicular.y),
+        new THREE.Vector3(end.x + perpendicular.x, pcbDepth + 0.01, end.y + perpendicular.y)
+      ];
 
-        // Create geometry for the rectangle
-        const geometry = new THREE.BufferGeometry();
+      // Create geometry for the rectangle
+      const geometry = new THREE.BufferGeometry();
 
-        // Define vertices for two triangles forming the rectangle
-        const vertices = new Float32Array([
-            // First triangle
-            corners[0].x, corners[0].y, corners[0].z,
-            corners[1].x, corners[1].y, corners[1].z,
-            corners[2].x, corners[2].y, corners[2].z,
-            // Second triangle
-            corners[0].x, corners[0].y, corners[0].z,
-            corners[2].x, corners[2].y, corners[2].z,
-            corners[3].x, corners[3].y, corners[3].z,
-        ]);
+      // Define vertices for two triangles forming the rectangle
+      const vertices = new Float32Array([
+        // First triangle
+        corners[0].x, corners[0].y, corners[0].z,
+        corners[1].x, corners[1].y, corners[1].z,
+        corners[2].x, corners[2].y, corners[2].z,
+        // Second triangle
+        corners[0].x, corners[0].y, corners[0].z,
+        corners[2].x, corners[2].y, corners[2].z,
+        corners[3].x, corners[3].y, corners[3].z,
+      ]);
 
-        geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+      geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
 
-        // Calculate face normals
-        geometry.computeVertexNormals();
+      // Calculate face normals
+      geometry.computeVertexNormals();
 
-        // Create material and mesh
-        const material = new THREE.MeshStandardMaterial({
-            color: 0xffd700, // Gold color
-            side: THREE.DoubleSide // Make the rectangle visible from both sides
-        });
-
-        const rectangleMesh = new THREE.Mesh(geometry, material);
-        scene.add(rectangleMesh);
+      const rectangleMesh = new THREE.Mesh(geometry, material);
+      scene.add(rectangleMesh);
     }
-});
+    const startCircle = new THREE.CircleGeometry(0.2, 32);
+    startCircle.rotateX(-Math.PI / 2);
+    const startCircleMesh = new THREE.Mesh(startCircle, material);
+    startCircleMesh.position.set(points[0].x, pcbDepth + 0.01, points[0].z);
+    scene.add(startCircleMesh);
+
+    const endCircle = new THREE.CircleGeometry(0.2, 32);
+    endCircle.rotateX(-Math.PI / 2);
+    const endCircleMesh = new THREE.Mesh(endCircle, material);
+    endCircleMesh.position.set(points[totalPoints - 1].x, pcbDepth + 0.01, points[totalPoints - 1].z);
+    scene.add(endCircleMesh);
+
+  });
 
 
   // Animation loop
