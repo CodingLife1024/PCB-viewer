@@ -158,6 +158,8 @@ export function renderer(
   const axesHelper = new THREE.AxesHelper(50);
   scene.add(axesHelper);
 
+
+
   // OrbitControls for camera movement
   const controls = new OrbitControls(camera, renderer.domElement);
 
