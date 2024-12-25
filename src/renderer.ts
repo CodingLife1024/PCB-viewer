@@ -17,9 +17,9 @@ import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'; //
  */
 export function renderer(
   container: HTMLElement,
-  models: { path: string; position: { x: number; y: number }, rotation: { x: number; y: number; z: number } }[],
+  models: { path: string; position: { x: number; y: number }, rotation: { x: number; y: number; z: number, } }[],
   holes: { position: { x: number; y: number }, radius: number }[],
-  text: { text: string; position: { x: number; y: number, }; size: number }[]
+  text: { text: string; position: { x: number; y: number, }; angle: number; size: number }[]
 ): void {
   // Scene setup
   const scene = new THREE.Scene();
@@ -186,7 +186,7 @@ export function renderer(
   // Load font and create text
   const fontLoader = new FontLoader();
   fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
-    text.forEach(({ text: message, position, size }) => {
+    text.forEach(({ text: message, position, angle, size }) => {
       const textGeometry = new TextGeometry(message, {
         font: font,
         size: size, // Font size
@@ -199,6 +199,8 @@ export function renderer(
 
       // Rotate the text by -Math.PI / 2 on the X-axis
       textMesh.rotateX(-Math.PI / 2);
+      textMesh.rotateZ(Math.PI * angle);
+      // textMesh.rotateZ(Math.PI * rotation.y);
 
       // Position the text
       textMesh.position.set(position.x, pcbDepth, position.y); // Fixed z-coordinate 10
