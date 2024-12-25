@@ -18,7 +18,7 @@ import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'; //
  */
 export function renderer(
   container: HTMLElement,
-  models: { path: string; position: { x: number; y: number }, rotation: { x: number; y: number; z: number, } }[],
+  models: { path: string; position: { x: number; z: number }, rotation: { x: number; y: number; z: number, } }[],
   holes: { position: { x: number; z: number }, radius: number }[],
   text: { text: string; position: { x: number; z: number, }; angle: number; size: number }[],
   wiringPaths: { points: { x: number; z: number }[]; thickness: number }[],
@@ -91,9 +91,9 @@ export function renderer(
           model.rotation.y = Math.PI * rotation.y;
           model.rotation.z = Math.PI * rotation.z;
           const bbox = new THREE.Box3().setFromObject(model);
-          const minZ = bbox.min.z;
-          const zLength = bbox.max.z - bbox.min.z;
-          model.position.set(position.x, -zLength / 2 - minZ + pcbDepth, position.y);
+          const minY = bbox.min.z;
+          const yLength = bbox.max.z - bbox.min.z;
+          model.position.set(position.x, -yLength / 2 - minY + pcbDepth, position.z);
           model.scale.set(1, 1, 1);
           scene.add(model);
         },
@@ -111,8 +111,8 @@ export function renderer(
           mesh.rotateY(Math.PI * rotation.y);
           mesh.rotateZ(Math.PI * rotation.z);
           const stlBBox = new THREE.Box3().setFromObject(mesh);
-          const stlMinZ = stlBBox.min.z;
-          mesh.position.set(position.x, -stlMinZ + pcbDepth, position.y);
+          const stlMinY = stlBBox.min.z;
+          mesh.position.set(position.x, -stlMinY + pcbDepth, position.z);
           mesh.scale.set(1, 1, 1);
           scene.add(mesh);
         },
@@ -128,8 +128,8 @@ export function renderer(
           object.rotation.x = Math.PI * rotation.x;
           object.rotation.y = Math.PI * rotation.y;
           object.rotation.z = Math.PI * rotation.z;
-          const objMinZ = objBBox.min.z;
-          object.position.set(position.x, -objMinZ + pcbDepth, position.y);
+          const objMinY = objBBox.min.z;
+          object.position.set(position.x, -objMinY + pcbDepth, position.z);
           object.scale.set(1, 1, 1);
           scene.add(object);
         },
@@ -145,8 +145,8 @@ export function renderer(
           object.rotation.x = Math.PI * rotation.x;
           object.rotation.y = Math.PI * rotation.y;
           object.rotation.z = Math.PI * rotation.z;
-          const wrlMinZ = wrlBBox.min.z;
-          object.position.set(position.x, -wrlMinZ + pcbDepth, position.y);
+          const wrlMinY = wrlBBox.min.z;
+          object.position.set(position.x, -wrlMinY + pcbDepth, position.z);
           object.scale.set(1, 1, 1);
           scene.add(object);
         },
