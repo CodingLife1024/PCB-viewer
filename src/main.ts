@@ -40,7 +40,7 @@ renderer(
     { position: { x: -15, y: 8 }, radius: 0.6 },
   ],
   [
-    { text: "PCB 3D Visualisation", position: { x: -15, y: -15 }, angle: 0, size: 1 },
-    { text: "Riddhi's Project", position: { x: -18, y: 0 }, angle: 0.5 , size: 1 },
+    { text: "Stayin' Alive", position: { x: -15, y: -15 }, angle: 0, size: 1 },
+    { text: "https://pcb-viewer.netlify.app/", position: { x: -18, y: 0 }, angle: 0.5 , size: 1 },
   ]
 );
