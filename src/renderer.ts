@@ -19,7 +19,7 @@ import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'; //
 export function renderer(
   container: HTMLElement,
   models: { path: string; position: { x: number; y: number }, rotation: { x: number; y: number; z: number, } }[],
-  holes: { position: { x: number; y: number }, radius: number }[],
+  holes: { position: { x: number; z: number }, radius: number }[],
   text: { text: string; position: { x: number; z: number, }; angle: number; size: number }[],
   wiringPaths: { points: { x: number; z: number }[]; thickness: number }[],
 ): void {

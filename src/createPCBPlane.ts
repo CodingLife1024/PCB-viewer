@@ -9,7 +9,7 @@ import * as THREE from 'three';
  * @param holes - An array of objects specifying hole positions and radii.
  * @returns A THREE.Mesh representing the PCB with holes, rotated along the X-axis.
  */
-export function createPCBWithHoles(width: number, height: number, depth: number, holes: { position: { x: number; y: number }, radius: number }[]): THREE.Mesh {
+export function createPCBWithHoles(width: number, height: number, depth: number, holes: { position: { x: number; z: number }, radius: number }[]): THREE.Mesh {
     const shape = new THREE.Shape();
     shape.moveTo(-width / 2, -height / 2);
     shape.lineTo(width / 2, -height / 2);
@@ -20,7 +20,7 @@ export function createPCBWithHoles(width: number, height: number, depth: number,
     // Add holes to the shape
     holes.forEach(({ position, radius }) => {
         const holeShape = new THREE.Path();
-        holeShape.absarc(position.y, -position.x, radius, 0, Math.PI * 2, false);
+        holeShape.absarc(position.z, position.x, radius, 0, Math.PI * 2, false);
         shape.holes.push(holeShape);
     });
 
