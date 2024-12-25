@@ -39,7 +39,7 @@ renderer(
     { position: { x: -15, y: 8 }, radius: 0.6 },
   ],
   [
-    { text: "Hello World", position: { x: -10, y: -10 }, size: 2 },
-    { text: "PCB Design", position: { x: -5, y: -5 }, size: 2 },
+    { text: "PCB 3D Visualisation", position: { x: -15, y: -15 }, size: 1 },
+    { text: "Riddhi's Project", position: { x: 0, y: -18 }, size: 1 },
   ]
 );

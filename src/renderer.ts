@@ -5,6 +5,8 @@ import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { VRMLLoader } from 'three/examples/jsm/loaders/VRMLLoader.js';
 import { createPCBWithHoles } from './createPCBPlane';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js'; // Correct import for FontLoader
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'; // Correct import for TextGeometry
 
 /**
  * Initializes and renders a Three.js scene with multiple models, axes, and a plane.
@@ -179,6 +181,29 @@ export function renderer(
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  // Load font and create text
+  const fontLoader = new FontLoader();
+  fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
+    text.forEach(({ text: message, position, size }) => {
+      const textGeometry = new TextGeometry(message, {
+        font: font,
+        size: size, // Font size
+        height: 0.01,  // Depth of the text
+        curveSegments: 12, // Smoothness of the curve
+      });
+
+      const textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+      const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+
+      // Rotate the text by -Math.PI / 2 on the X-axis
+      textMesh.rotateX(-Math.PI / 2);
+
+      // Position the text
+      textMesh.position.set(position.x, pcbDepth, position.y); // Fixed z-coordinate 10
+      scene.add(textMesh);
+    });
   });
 
   // Animation loop
