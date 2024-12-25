@@ -161,6 +161,17 @@ export function renderer(
   const axesHelper = new THREE.AxesHelper(50);
   scene.add(axesHelper);
 
+  // Create axis labels
+  const axisLabels = [
+    { text: 'X', position: new THREE.Vector3(52, 0, 0), color: 0xff0000 }, // Red for X
+    { text: 'Y', position: new THREE.Vector3(0, 52, 0), color: 0x00ff00 }, // Green for Y
+    { text: 'Z', position: new THREE.Vector3(0, 0, 52), color: 0x0000ff }  // Blue for Z
+  ];
+
+  const labelMaterial = axisLabels.map(label =>
+    new THREE.MeshBasicMaterial({ color: label.color })
+  );
+
   // OrbitControls for camera movement
   const controls = new OrbitControls(camera, renderer.domElement);
 
@@ -196,6 +207,22 @@ export function renderer(
       const textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
       const textMesh = new THREE.Mesh(textGeometry, textMaterial);
 
+      axisLabels.forEach((label, index) => {
+        const textGeometry = new TextGeometry(label.text, {
+          font: font,
+          size: 3,
+          height: 0.2,
+          curveSegments: 12,
+        });
+
+        const textMesh = new THREE.Mesh(textGeometry, labelMaterial[index]);
+        textMesh.position.copy(label.position);
+
+        // Make text always face the camera
+        textMesh.userData.type = 'axisLabel';
+        scene.add(textMesh);
+      });
+
       // Rotate the text by -Math.PI / 2 on the X-axis
       textMesh.rotateX(-Math.PI / 2);
       textMesh.rotateZ(Math.PI * angle);
@@ -210,52 +237,67 @@ export function renderer(
   wiringPaths.forEach((wiringPath) => {
     const { points, thickness } = wiringPath;
 
-    // Create a geometry for the wire
-    const wireGeometry = new THREE.BufferGeometry();
-
-    // Convert points to THREE.Vector3 and align with PCB height
-    const vertices = points.flatMap(({ x, y }) => [x, pcbDepth + thickness, y]);
-
-    // Set vertices for geometry
-    wireGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-
-    // Create a mesh with a cylinder to represent thickness
+    // Process each segment between consecutive points
     for (let i = 0; i < points.length - 1; i++) {
-      const start = new THREE.Vector3(points[i].x, pcbDepth + thickness, points[i].y);
-      const end = new THREE.Vector3(points[i + 1].x, pcbDepth + thickness, points[i + 1].y);
+        const start = new THREE.Vector2(points[i].x, points[i].y);
+        const end = new THREE.Vector2(points[i + 1].x, points[i + 1].y);
 
-      const direction = new THREE.Vector3().subVectors(end, start);
-      const length = direction.length();
-      direction.normalize();
+        // Calculate direction and perpendicular vector for rectangle width
+        const direction = new THREE.Vector2().subVectors(end, start);
+        const length = direction.length();
+        direction.normalize();
 
-      // Create a cylinder for the wire segment
-      const cylinderGeometry = new THREE.CylinderGeometry(
-          thickness, // radiusTop
-          thickness, // radiusBottom
-          length,    // height
-          8          // radialSegments
-      );
-      const cylinderMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700 }); // Gold color
-      const cylinderMesh = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+        // Calculate perpendicular vector for thickness
+        const perpendicular = new THREE.Vector2(-direction.y, direction.x).multiplyScalar(thickness / 2);
 
-      // Orient the cylinder along the line
-      const axis = new THREE.Vector3(0, 1, 0); // Y-axis
-      const quaternion = new THREE.Quaternion().setFromUnitVectors(axis, direction.clone().normalize());
-      cylinderMesh.quaternion.copy(quaternion);
+        // Calculate the four corners of the rectangle
+        const corners = [
+            new THREE.Vector3(start.x + perpendicular.x, pcbDepth + 0.01, start.y + perpendicular.y),
+            new THREE.Vector3(start.x - perpendicular.x, pcbDepth + 0.01, start.y - perpendicular.y),
+            new THREE.Vector3(end.x - perpendicular.x, pcbDepth + 0.01, end.y - perpendicular.y),
+            new THREE.Vector3(end.x + perpendicular.x, pcbDepth + 0.01, end.y + perpendicular.y)
+        ];
 
-      // Position the cylinder at the midpoint of the segment
-      const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
-      cylinderMesh.position.copy(midpoint);
+        // Create geometry for the rectangle
+        const geometry = new THREE.BufferGeometry();
 
-      // Add the segment to the scene
-      scene.add(cylinderMesh);
+        // Define vertices for two triangles forming the rectangle
+        const vertices = new Float32Array([
+            // First triangle
+            corners[0].x, corners[0].y, corners[0].z,
+            corners[1].x, corners[1].y, corners[1].z,
+            corners[2].x, corners[2].y, corners[2].z,
+            // Second triangle
+            corners[0].x, corners[0].y, corners[0].z,
+            corners[2].x, corners[2].y, corners[2].z,
+            corners[3].x, corners[3].y, corners[3].z,
+        ]);
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+
+        // Calculate face normals
+        geometry.computeVertexNormals();
+
+        // Create material and mesh
+        const material = new THREE.MeshStandardMaterial({
+            color: 0xffd700, // Gold color
+            side: THREE.DoubleSide // Make the rectangle visible from both sides
+        });
+
+        const rectangleMesh = new THREE.Mesh(geometry, material);
+        scene.add(rectangleMesh);
     }
-  });
+});
 
 
   // Animation loop
   function animate() {
     requestAnimationFrame(animate);
+    scene.traverse((object) => {
+      if (object.userData.type === 'axisLabel') {
+        object.quaternion.copy(camera.quaternion);
+      }
+    });
     updateCameraAndControls();
   }
 

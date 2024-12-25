@@ -15,29 +15,29 @@ renderer(
     { path: '/models/microcontroller.wrl', position: { x: 8, y: -14 }, rotation: { x: -0.5, y: 0, z: 0.5 } },
   ],
   [
-    { position: { x: 18, y: 18 }, radius: 0.3 },
-    { position: { x: 17, y: 18 }, radius: 0.3 },
-    { position: { x: 16, y: 18 }, radius: 0.3 },
-    { position: { x: 15, y: 18 }, radius: 0.3 },
-    { position: { x: 14, y: 18 }, radius: 0.3 },
-    { position: { x: 18, y: 17 }, radius: 0.3 },
-    { position: { x: 17, y: 17 }, radius: 0.3 },
-    { position: { x: 16, y: 17 }, radius: 0.3 },
-    { position: { x: 15, y: 17 }, radius: 0.3 },
-    { position: { x: 14, y: 17 }, radius: 0.3 },
+    { position: { x: -18, y: 18 }, radius: 0.3 },
+    { position: { x: -17, y: 18 }, radius: 0.3 },
+    { position: { x: -16, y: 18 }, radius: 0.3 },
+    { position: { x: -15, y: 18 }, radius: 0.3 },
+    { position: { x: -14, y: 18 }, radius: 0.3 },
+    { position: { x: -18, y: 17 }, radius: 0.3 },
+    { position: { x: -17, y: 17 }, radius: 0.3 },
+    { position: { x: -16, y: 17 }, radius: 0.3 },
+    { position: { x: -15, y: 17 }, radius: 0.3 },
+    { position: { x: -14, y: 17 }, radius: 0.3 },
 
-    { position: { x: -18, y: 18 }, radius: 0.6 },
-    { position: { x: -18, y: 16 }, radius: 0.6 },
-    { position: { x: -18, y: 14 }, radius: 0.6 },
-    { position: { x: -18, y: 12 }, radius: 0.6 },
-    { position: { x: -18, y: 10 }, radius: 0.6 },
-    { position: { x: -18, y: 8 }, radius: 0.6 },
-    { position: { x: -15, y: 18 }, radius: 0.6 },
-    { position: { x: -15, y: 16 }, radius: 0.6 },
-    { position: { x: -15, y: 14 }, radius: 0.6 },
-    { position: { x: -15, y: 12 }, radius: 0.6 },
-    { position: { x: -15, y: 10 }, radius: 0.6 },
-    { position: { x: -15, y: 8 }, radius: 0.6 },
+    { position: { x: 18, y: 18 }, radius: 0.6 },
+    { position: { x: 18, y: 16 }, radius: 0.6 },
+    { position: { x: 18, y: 14 }, radius: 0.6 },
+    { position: { x: 18, y: 12 }, radius: 0.6 },
+    { position: { x: 18, y: 10 }, radius: 0.6 },
+    { position: { x: 18, y: 8 }, radius: 0.6 },
+    { position: { x: 15, y: 18 }, radius: 0.6 },
+    { position: { x: 15, y: 16 }, radius: 0.6 },
+    { position: { x: 15, y: 14 }, radius: 0.6 },
+    { position: { x: 15, y: 12 }, radius: 0.6 },
+    { position: { x: 15, y: 10 }, radius: 0.6 },
+    { position: { x: 15, y: 8 }, radius: 0.6 },
   ],
   [
     { text: "Riddhidipta Pal", position: { x: -15, y: -15 }, angle: 0, size: 1 },
@@ -46,13 +46,55 @@ renderer(
   [
     // Array of objects for copper wiring paths with thickness
     {
-      points: [ { x: 0, y: 0 }, { x: 10, y: 0 }, { x: 10, y: 5 } ],
+      // Connection between top row holes and LED
+      points: [
+        { x: -18, y: 18 },
+        { x: -18, y: 12 },
+        { x: -10, y: 12 },
+        { x: -5, y: 8 },
+        { x: 0, y: 6 }
+      ],
+      thickness: 0.15
+    },
+    {
+      // Connection between right side holes and inductors
+      points: [
+        { x: 18, y: 16 },
+        { x: 16, y: 16 },
+        { x: 16, y: 4 },
+        { x: 17, y: 4 }
+      ],
       thickness: 0.2
     },
     {
-      points: [ { x: -5, y: -5 }, { x: 5, y: -5 }, { x: 5, y: 5 } ],
-      thickness: 0.1
+      // Connection from microcontroller to inductor
+      points: [
+        { x: 8, y: -14 },
+        { x: 12, y: -10 },
+        { x: 12, y: -4 },
+        { x: 17, y: -4 }
+      ],
+      thickness: 0.15
     },
-    // Add more wiring paths as needed
+    {
+      // Connection between diode and LED
+      points: [
+        { x: 17, y: 10 },
+        { x: 12, y: 10 },
+        { x: 8, y: 8 },
+        { x: 0, y: 6 }
+      ],
+      thickness: 0.18
+    },
+    {
+      // Connection from laird component to microcontroller
+      points: [
+        { x: -5, y: -5 },
+        { x: -5, y: -10 },
+        { x: 0, y: -12 },
+        { x: 8, y: -14 }
+      ],
+      thickness: 0.15
+    }
   ]
 );

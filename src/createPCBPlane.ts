@@ -20,7 +20,7 @@ export function createPCBWithHoles(width: number, height: number, depth: number,
     // Add holes to the shape
     holes.forEach(({ position, radius }) => {
         const holeShape = new THREE.Path();
-        holeShape.absarc(position.y, position.x, radius, 0, Math.PI * 2, false);
+        holeShape.absarc(position.y, -position.x, radius, 0, Math.PI * 2, false);
         shape.holes.push(holeShape);
     });
 
