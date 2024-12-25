@@ -40,61 +40,39 @@ renderer(
     { position: { x: 15, y: 8 }, radius: 0.6 },
   ],
   [
-    { text: "Riddhidipta Pal", position: { x: -15, y: -15 }, angle: 0, size: 1 },
-    { text: "https://pcb-viewer.netlify.app/", position: { x: -18, y: 0 }, angle: 0.5 , size: 1 },
+    { text: "Riddhidipta Pal", position: { x: -15, z: -15 }, angle: 0, size: 1 },
+    { text: "https://pcb-viewer.netlify.app/", position: { x: -18, z: 0 }, angle: 0.5 , size: 1 },
   ],
   [
-    // Array of objects for copper wiring paths with thickness
     {
-      // Connection between top row holes and LED
       points: [
-        { x: -18, y: 18 },
-        { x: -18, y: 12 },
-        { x: -10, y: 12 },
-        { x: -5, y: 8 },
-        { x: 0, y: 6 }
+        { x: 15, z: 15 },
+        { x: 10, z: 15 },
+        { x: 5, z: 10 },
+        { x: 5, z: 5 },
+        { x: 0, z: 0 }
       ],
-      thickness: 0.15
+      thickness: 0.12
     },
     {
-      // Connection between right side holes and inductors
       points: [
-        { x: 18, y: 16 },
-        { x: 16, y: 16 },
-        { x: 16, y: 4 },
-        { x: 17, y: 4 }
-      ],
-      thickness: 0.2
-    },
-    {
-      // Connection from microcontroller to inductor
-      points: [
-        { x: 8, y: -14 },
-        { x: 12, y: -10 },
-        { x: 12, y: -4 },
-        { x: 17, y: -4 }
-      ],
-      thickness: 0.15
-    },
-    {
-      // Connection between diode and LED
-      points: [
-        { x: 17, y: 10 },
-        { x: 12, y: 10 },
-        { x: 8, y: 8 },
-        { x: 0, y: 6 }
+        { x: 15, z: 16 },
+        { x: 9, z: 16 },
+        { x: 4, z: 11 },
+        { x: 4, z: 5 },
+        { x: -1, z: 0 }
       ],
       thickness: 0.18
     },
     {
-      // Connection from laird component to microcontroller
       points: [
-        { x: -5, y: -5 },
-        { x: -5, y: -10 },
-        { x: 0, y: -12 },
-        { x: 8, y: -14 }
+        { x: 15, z: 17 },
+        { x: 8, z: 17 },
+        { x: 3, z: 12 },
+        { x: 3, z: 5 },
+        { x: -2, z: 0 }
       ],
-      thickness: 0.15
-    }
+      thickness: 0.18
+    },
   ]
 );

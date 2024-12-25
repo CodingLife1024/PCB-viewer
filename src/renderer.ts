@@ -14,13 +14,14 @@ import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'; //
  * @param models An array of objects containing model paths, file types, and positions.
  * @param holes An array of objects containing hole positions and radii.
  * @param text An array of objects containing text strings and positions.
+ * @param wiringPaths An array of objects containing wiring path points and thickness.
  */
 export function renderer(
   container: HTMLElement,
   models: { path: string; position: { x: number; y: number }, rotation: { x: number; y: number; z: number, } }[],
   holes: { position: { x: number; y: number }, radius: number }[],
-  text: { text: string; position: { x: number; y: number, }; angle: number; size: number }[],
-  wiringPaths: { points: { x: number; y: number }[]; thickness: number }[],
+  text: { text: string; position: { x: number; z: number, }; angle: number; size: number }[],
+  wiringPaths: { points: { x: number; z: number }[]; thickness: number }[],
 ): void {
   // Scene setup
   const scene = new THREE.Scene();
@@ -229,7 +230,7 @@ export function renderer(
       // textMesh.rotateZ(Math.PI * rotation.y);
 
       // Position the text
-      textMesh.position.set(position.x, pcbDepth, position.y); // Fixed z-coordinate 10
+      textMesh.position.set(position.x, pcbDepth, position.z); // Fixed z-coordinate 10
       scene.add(textMesh);
     });
   });
@@ -239,8 +240,8 @@ export function renderer(
 
     // Process each segment between consecutive points
     for (let i = 0; i < points.length - 1; i++) {
-        const start = new THREE.Vector2(points[i].x, points[i].y);
-        const end = new THREE.Vector2(points[i + 1].x, points[i + 1].y);
+        const start = new THREE.Vector2(points[i].x, points[i].z);
+        const end = new THREE.Vector2(points[i + 1].x, points[i + 1].z);
 
         // Calculate direction and perpendicular vector for rectangle width
         const direction = new THREE.Vector2().subVectors(end, start);
