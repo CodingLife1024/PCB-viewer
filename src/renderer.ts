@@ -253,7 +253,7 @@ export function renderer(
 
       // Calculate direction and perpendicular vector for rectangle width
       const direction = new THREE.Vector2().subVectors(end, start);
-      const length = direction.length();
+      // const length = direction.length();
       direction.normalize();
 
       // Calculate perpendicular vector for thickness
