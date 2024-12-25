@@ -42,5 +42,17 @@ renderer(
   [
     { text: "Riddhidipta Pal", position: { x: -15, y: -15 }, angle: 0, size: 1 },
     { text: "https://pcb-viewer.netlify.app/", position: { x: -18, y: 0 }, angle: 0.5 , size: 1 },
+  ],
+  [
+    // Array of objects for copper wiring paths with thickness
+    {
+      points: [ { x: 0, y: 0 }, { x: 10, y: 0 }, { x: 10, y: 5 } ],
+      thickness: 0.2
+    },
+    {
+      points: [ { x: -5, y: -5 }, { x: 5, y: -5 }, { x: 5, y: 5 } ],
+      thickness: 0.1
+    },
+    // Add more wiring paths as needed
   ]
 );

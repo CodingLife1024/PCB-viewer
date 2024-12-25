@@ -19,7 +19,8 @@ export function renderer(
   container: HTMLElement,
   models: { path: string; position: { x: number; y: number }, rotation: { x: number; y: number; z: number, } }[],
   holes: { position: { x: number; y: number }, radius: number }[],
-  text: { text: string; position: { x: number; y: number, }; angle: number; size: number }[]
+  text: { text: string; position: { x: number; y: number, }; angle: number; size: number }[],
+  wiringPaths: { points: { x: number; y: number }[]; thickness: number }[],
 ): void {
   // Scene setup
   const scene = new THREE.Scene();
@@ -160,8 +161,6 @@ export function renderer(
   const axesHelper = new THREE.AxesHelper(50);
   scene.add(axesHelper);
 
-
-
   // OrbitControls for camera movement
   const controls = new OrbitControls(camera, renderer.domElement);
 
@@ -207,6 +206,52 @@ export function renderer(
       scene.add(textMesh);
     });
   });
+
+  wiringPaths.forEach((wiringPath) => {
+    const { points, thickness } = wiringPath;
+
+    // Create a geometry for the wire
+    const wireGeometry = new THREE.BufferGeometry();
+
+    // Convert points to THREE.Vector3 and align with PCB height
+    const vertices = points.flatMap(({ x, y }) => [x, pcbDepth + thickness, y]);
+
+    // Set vertices for geometry
+    wireGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+
+    // Create a mesh with a cylinder to represent thickness
+    for (let i = 0; i < points.length - 1; i++) {
+      const start = new THREE.Vector3(points[i].x, pcbDepth + thickness, points[i].y);
+      const end = new THREE.Vector3(points[i + 1].x, pcbDepth + thickness, points[i + 1].y);
+
+      const direction = new THREE.Vector3().subVectors(end, start);
+      const length = direction.length();
+      direction.normalize();
+
+      // Create a cylinder for the wire segment
+      const cylinderGeometry = new THREE.CylinderGeometry(
+          thickness, // radiusTop
+          thickness, // radiusBottom
+          length,    // height
+          8          // radialSegments
+      );
+      const cylinderMaterial = new THREE.MeshStandardMaterial({ color: 0xffd700 }); // Gold color
+      const cylinderMesh = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+
+      // Orient the cylinder along the line
+      const axis = new THREE.Vector3(0, 1, 0); // Y-axis
+      const quaternion = new THREE.Quaternion().setFromUnitVectors(axis, direction.clone().normalize());
+      cylinderMesh.quaternion.copy(quaternion);
+
+      // Position the cylinder at the midpoint of the segment
+      const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+      cylinderMesh.position.copy(midpoint);
+
+      // Add the segment to the scene
+      scene.add(cylinderMesh);
+    }
+  });
+
 
   // Animation loop
   function animate() {
